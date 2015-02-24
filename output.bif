@@ -1,0 +1,4 @@
+the_ROM_image:
+{
+	[bootloader]C:\Users\andrew\workspace\ocm_memtest\zynq_fsbl\Debug\zynq_fsbl.elf
+}

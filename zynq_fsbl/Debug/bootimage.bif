@@ -1,0 +1,4 @@
+the_ROM_image:
+{
+	[bootloader]/home/andrew/expatria/silver-bullet/sdrdc/experiments/BIST/zc702_bist/zc702_bist.sdk/SDK/SDK_Export/zynq_fsbl/Debug/zynq_fsbl.elf
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete 6 resources" deleteContents="false" description="Delete 6 resources" element1="/zynq_fsbl/Debug/u-boot.elf" element2="/zynq_fsbl/Debug/zynq_fsbl_40mhz.elf" element3="/zynq_fsbl/Debug/zynq_fsbl.elf" element4="/zynq_fsbl/Debug/zynq_fsbl - 1GHz_io_pll.elf" element5="/zynq_fsbl/Debug/zynq_fsbl - 250MHzFPGACLK.elf" element6="/zynq_fsbl/Debug/zynq_fsbl - qspi_fix.elf" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="6" stamp="1424476677821"/>
+</session>
