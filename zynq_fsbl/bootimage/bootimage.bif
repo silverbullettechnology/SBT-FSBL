@@ -1,0 +1,6 @@
+the_ROM_image:
+{
+	[bootloader]/Silver-Bullet/upstream/xilinx/Release_BIST-c/zc702_bist/zc702_bist.sdk/SDK/SDK_Export/zynq_fsbl/Debug/zynq_fsbl.elf
+	/Silver-Bullet/upstream/xilinx/Release_BIST-c/zc702_bist/zc702_bist.sdk/SDK/SDK_Export/hw_platform_0/system.bit
+	/Silver-Bullet/upstream/xilinx/Release_BIST-c/zc702_bist/zc702_bist.sdk/SDK/SDK_Export/bist_app/Debug/bist_app.elf
+}
