@@ -169,29 +169,52 @@ u32 FsblHookBeforeHandoff(void)
 	XGpioPs_CfgInitialize(&Gpio, ConfigPtr,
 					ConfigPtr->BaseAddr);
 
-	XGpioPs_SetDirection(&Gpio, EMIO_BANK, 0xFFFF);
-	XGpioPs_SetOutputEnable(&Gpio, EMIO_BANK, 0xFFFF);
-
-	XGpioPs_SetDirection(&Gpio, 3, 0xFFFF);
-	XGpioPs_SetOutputEnable(&Gpio, 3, 0xFFFF);
-
 	//Set DC1_Sw_CTRL
+	XGpioPs_SetDirectionPin(&Gpio, 99, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 99, 1);
 	XGpioPs_WritePin(&Gpio, 99, 0x0);
 
+	//XGpioPs_SetDirection(&Gpio, EMIO_BANK, 0xFFFF);
+	//XGpioPs_SetOutputEnable(&Gpio, EMIO_BANK, 0xFFFF);
+
+	//XGpioPs_SetDirection(&Gpio, 3, 0xFFFF);
+	//XGpioPs_SetOutputEnable(&Gpio, 3, 0xFFFF);
+
+
+
+
 	//ADI Pins
+	XGpioPs_SetDirectionPin(&Gpio, 58, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 58, 1);
+	XGpioPs_SetDirectionPin(&Gpio, 59, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 59, 1);
 	XGpioPs_WritePin(&Gpio, 58, 0x1);
 	XGpioPs_WritePin(&Gpio, 59, 0x1);
 
 	//Ethernet PHY reset
+	XGpioPs_SetDirectionPin(&Gpio, 71, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 71, 1);
 	XGpioPs_WritePin(&Gpio, 71, 0x1);
 
 	//USB Reset
+	XGpioPs_SetDirectionPin(&Gpio, 83, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 83, 1);
 	XGpioPs_WritePin(&Gpio, 83, 0x1);
 
 	//Emmc Reset
-	XGpioPs_WritePin(&Gpio, 84, 0x1);
+	XGpioPs_SetDirectionPin(&Gpio, 88, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 88, 1);
+	XGpioPs_WritePin(&Gpio, 88, 0x1);
 
 	//LEDs
+	XGpioPs_SetDirectionPin(&Gpio, 54, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 54, 1);
+	XGpioPs_SetDirectionPin(&Gpio, 55, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 55, 1);
+	XGpioPs_SetDirectionPin(&Gpio, 56, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 56, 1);
+	XGpioPs_SetDirectionPin(&Gpio, 57, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 57, 1);
 	XGpioPs_WritePin(&Gpio, 54, 0x1);
 	XGpioPs_WritePin(&Gpio, 55, 0x1);
 	XGpioPs_WritePin(&Gpio, 56, 0x1);
@@ -204,13 +227,13 @@ u32 FsblHookBeforeHandoff(void)
 	XGpioPs_WritePin(&Gpio, 59, 0x0);
 
 	//Ethernet PHY reset
-	XGpioPs_WritePin(&Gpio, 71, 0x0);
+	XGpioPs_WritePin(&Gpio, 86, 0x0);
 
 	//USB Reset
-	XGpioPs_WritePin(&Gpio, 83, 0x0);
+	XGpioPs_WritePin(&Gpio, 87, 0x0);
 
 	//Emmc Reset
-	XGpioPs_WritePin(&Gpio, 84, 0x0);
+	XGpioPs_WritePin(&Gpio, 88, 0x0);
 
 	//LEDs
 	XGpioPs_WritePin(&Gpio, 54, 0x0);
@@ -226,20 +249,26 @@ u32 FsblHookBeforeHandoff(void)
 	XGpioPs_WritePin(&Gpio, 59, 0x1);
 
 	//Ethernet PHY reset
-	XGpioPs_WritePin(&Gpio, 71, 0x1);
+	XGpioPs_WritePin(&Gpio, 86, 0x1);
 
 
 	//USB Reset
-	XGpioPs_WritePin(&Gpio, 83, 0x1);
+	XGpioPs_WritePin(&Gpio, 87, 0x1);
 
 	//Emmc Reset
-	XGpioPs_WritePin(&Gpio, 84, 0x1);
+	XGpioPs_WritePin(&Gpio, 88, 0x1);
 
 	//LEDs
 	XGpioPs_WritePin(&Gpio, 54, 0x1);
 	XGpioPs_WritePin(&Gpio, 55, 0x1);
 	XGpioPs_WritePin(&Gpio, 56, 0x1);
 	XGpioPs_WritePin(&Gpio, 57, 0x1);
+
+	for (Delay = 0; Delay < LED_DELAY; Delay++);
+
+	XGpioPs_WritePin(&Gpio, 55, 0x0);
+	XGpioPs_WritePin(&Gpio, 56, 0x0);
+	XGpioPs_WritePin(&Gpio, 57, 0x0);
 
 	/**(int*) 0xf8000008 = 0xDF0D;
 
