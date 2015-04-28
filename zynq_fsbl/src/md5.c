@@ -94,7 +94,7 @@
 * @note		None
 *
 ****************************************************************************/
-inline void * _memset( void *dest, int	ch, u32	count )
+inline void * MD5Memset( void *dest, int	ch, u32	count )
 {
 	register char *dst8 = (char*)dest;
 
@@ -120,7 +120,7 @@ inline void * _memset( void *dest, int	ch, u32	count )
 * @note		None
 *
 ****************************************************************************/
-inline void * _memcpy( void *dest, const void *src,
+inline void * MD5Memcpy( void *dest, const void *src,
 		 	 u32 count, boolean	doByteSwap )
 {
 	register char * dst8 = (char*)dest;
@@ -340,11 +340,11 @@ inline void MD5Update( MD5Context *context, u8 *buffer,
 		temp = MD5_SIGNATURE_BYTE_SIZE - temp;
 		
 		if( len < temp ) {
-			_memcpy( p, buffer, len, doByteSwap );
+			MD5Memcpy( p, buffer, len, doByteSwap );
 			return;
 		}
 		
-		_memcpy( p, buffer, temp, doByteSwap );
+		MD5Memcpy( p, buffer, temp, doByteSwap );
 		
 		MD5Transform( context->buffer, (u32 *)context->intermediate );
 		
@@ -358,7 +358,7 @@ inline void MD5Update( MD5Context *context, u8 *buffer,
 	 */
 
 	while( len >= MD5_SIGNATURE_BYTE_SIZE ) {
-		_memcpy( context->intermediate, buffer, MD5_SIGNATURE_BYTE_SIZE,
+		MD5Memcpy( context->intermediate, buffer, MD5_SIGNATURE_BYTE_SIZE,
 				 doByteSwap );
 		
 		MD5Transform( context->buffer, (u32 *)context->intermediate );
@@ -371,7 +371,7 @@ inline void MD5Update( MD5Context *context, u8 *buffer,
 	/*
 	 * Handle any remaining bytes of data
 	 */
-	_memcpy( context->intermediate, buffer, len, doByteSwap );
+	MD5Memcpy( context->intermediate, buffer, len, doByteSwap );
 	
 }
 
@@ -424,19 +424,19 @@ inline void MD5Final( MD5Context *context, u8 *digest,
 		/*
 		 * Two lots of padding: Pad the first block to 64 bytes
 		 */
-		_memset( p, 0, count );
+		MD5Memset( p, 0, count );
 		
 		MD5Transform( context->buffer, (u32 *)context->intermediate );
 
 		/*
 		 * Now fill the next block with 56 bytes
 		 */
-		_memset( context->intermediate, 0, 56 );
+		MD5Memset( context->intermediate, 0, 56 );
 	} else {
 		/*
 		 * Pad block to 56 bytes
 		 */
-		_memset( p, 0, count - 8 );
+		MD5Memset( p, 0, count - 8 );
 	}
 
 	/*
@@ -450,7 +450,7 @@ inline void MD5Final( MD5Context *context, u8 *digest,
 	/*
 	 * Now return the digest
 	 */
-	_memcpy( digest, context->buffer, 16, doByteSwap );
+	MD5Memcpy( digest, context->buffer, 16, doByteSwap );
 }
 
 /******************************************************************************/

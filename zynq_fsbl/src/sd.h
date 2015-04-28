@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+* (c) Copyright 2012-2014 Xilinx, Inc. All rights reserved.
 *
 * This file contains confidential and proprietary information of Xilinx, Inc.
 * and is protected under U.S. and international copyright and other
@@ -51,6 +51,7 @@
 * Ver	Who	Date		Changes
 * ----- ---- -------- -------------------------------------------------------
 * 1.00a bh	03/10/11 Initial release
+* 7.00a kc  10/18/13 Integrated SD/MMC driver
 *
 * </pre>
 *
@@ -68,7 +69,7 @@ extern "C" {
 
 /************************** Function Prototypes ******************************/
 
-#ifdef XPAR_PS7_SD_0_S_AXI_BASEADDR
+#if defined(XPAR_PS7_SD_0_S_AXI_BASEADDR) || defined(XPAR_XSDPS_0_BASEADDR)
 u32 InitSD(const char *);
 
 u32 SDAccess( u32 SourceAddress,

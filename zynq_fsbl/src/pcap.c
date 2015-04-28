@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+* (c) Copyright 2012-2014 Xilinx, Inc. All rights reserved.
 *
 * This file contains confidential and proprietary information of Xilinx, Inc.
 * and is protected under U.S. and international copyright and other
@@ -57,11 +57,29 @@
 * 3.00a mb  16/08/12	Added the poll function
 *						Removed the FPGA_RST_CTRL define
 *						Added the flag for NON PS instantiated bitstream
-* 4.00a sgd 02/28/13	Fix for CR#681014
-* 						Fix for CR#689026
-* 						Fix for CR#699475
-*						Removed check for Fabric is already initialized
-*						Fix for CR#705664
+* 4.00a sgd 02/28/13	Fix for CR#681014 - ECC init in FSBL should not call
+*                                           fabric_init()
+* 						Fix for CR#689026 - FSBL doesn't hold PL resets active
+* 						                    during bit download
+* 						Fix for CR#699475 - FSBL functionality is broken and
+* 						                    its not able to boot in QSPI/NAND
+* 						                    bootmode
+*						Fix for CR#705664 - FSBL fails to decrypt the
+*						                    bitstream when the image is AES
+*						                    encrypted using non-zero key value
+* 6.00a kc  08/30/13    Fix for CR#722979 - Provide customer-friendly
+*                                           changelogs in FSBL
+* 7.00a kc	10/25/13	Fix for CR#724620 - How to handle PCAP_MODE after
+*						                    bitstream configuration
+*						Fix for CR#726178 - FabricInit() PROG_B is kept active
+*						                    for 5mS.
+* 						Fix for CR#731839 - FSBL has to check the
+* 											HMAC error status after decryption
+*			12/04/13	Fix for CR#764382 - How to handle PCAP_MODE after
+*						                    bitstream configuration - PCAP_MODE
+*											and PCAP_PR bits are not modified
+* 8.00a kc  2/20/14		Fix for CR#775631 - FSBL: FsblGetGlobalTimer() 
+*						is not proper
 * </pre>
 *
 * @note
@@ -130,6 +148,7 @@ u32 PcapDataTransfer(u32 *SourceDataPtr, u32 *DestinationDataPtr,
 				u32 SourceLength, u32 DestinationLength, u32 SecureTransfer)
 {
 	u32 Status;
+	u32 IntrStsReg;
 	u32 PcapTransferType = XDCFG_CONCURRENT_NONSEC_READ_WRITE;
 
 	/*
@@ -141,7 +160,7 @@ u32 PcapDataTransfer(u32 *SourceDataPtr, u32 *DestinationDataPtr,
 
 #ifdef FSBL_PERF
 	XTime tXferCur = 0;
-	FsblGetGlobalTime(tXferCur);
+	FsblGetGlobalTime(&tXferCur);
 #endif
 
 	/*
@@ -193,6 +212,15 @@ u32 PcapDataTransfer(u32 *SourceDataPtr, u32 *DestinationDataPtr,
 	}
 
 	fsbl_printf(DEBUG_INFO,"DMA Done ! \n\r");
+		
+	/*
+	 * Check for errors
+	 */
+	IntrStsReg = XDcfg_IntrGetStatus(DcfgInstPtr);
+	if (IntrStsReg & FSBL_XDCFG_IXR_ERROR_FLAGS_MASK) {
+		fsbl_printf(DEBUG_INFO,"Errors in PCAP \r\n");
+		return XST_FAILURE;
+	}
 
 	/*
 	 * For Performance measurement
@@ -230,6 +258,7 @@ u32 PcapLoadPartition(u32 *SourceDataPtr, u32 *DestinationDataPtr,
 		u32 SourceLength, u32 DestinationLength, u32 SecureTransfer)
 {
 	u32 Status;
+	u32 IntrStsReg;
 	u32 PcapTransferType = XDCFG_NON_SECURE_PCAP_WRITE;
 
 	/*
@@ -241,7 +270,7 @@ u32 PcapLoadPartition(u32 *SourceDataPtr, u32 *DestinationDataPtr,
 
 #ifdef FSBL_PERF
 	XTime tXferCur = 0;
-	FsblGetGlobalTime(tXferCur);
+	FsblGetGlobalTime(&tXferCur);
 #endif
 
 	/*
@@ -317,6 +346,15 @@ u32 PcapLoadPartition(u32 *SourceDataPtr, u32 *DestinationDataPtr,
 	}
 
 	fsbl_printf(DEBUG_INFO,"FPGA Done ! \n\r");
+	
+	/*
+	 * Check for errors
+	 */
+	IntrStsReg = XDcfg_IntrGetStatus(DcfgInstPtr);
+	if (IntrStsReg & FSBL_XDCFG_IXR_ERROR_FLAGS_MASK) {
+		fsbl_printf(DEBUG_INFO,"Errors in PCAP \r\n");
+		return XST_FAILURE;
+	}
 
 	/*
 	 * For Performance measurement
@@ -380,7 +418,8 @@ int InitPcap(void)
 ****************************************************************************/
 void FabricInit(void)
 {
-	u32 PcapReg;
+	u32 PcapReg; 
+	u32 PcapCtrlRegVal;
 	u32 StatusReg;
 
 	/*
@@ -403,9 +442,16 @@ void FabricInit(void)
 				(PcapReg | XDCFG_CTRL_PCFG_PROG_B_MASK));
 
 	/*
-	 * 5msec delay
+	 * Check for AES source key
 	 */
-	usleep(5000);
+	PcapCtrlRegVal = XDcfg_GetControlRegister(DcfgInstPtr);
+	if (PcapCtrlRegVal & PCAP_CTRL_PCFG_AES_FUSE_EFUSE_MASK) {
+		/*
+		 * 5msec delay
+		 */
+		usleep(5000);
+	}
+	
 	/*
 	 * Setting PCFG_PROG_B signal to low
 	 */
@@ -413,9 +459,15 @@ void FabricInit(void)
 				(PcapReg & ~XDCFG_CTRL_PCFG_PROG_B_MASK));
 
 	/*
-	 * 5msec delay
+	 * Check for AES source key
 	 */
-	usleep(5000);
+	if (PcapCtrlRegVal & PCAP_CTRL_PCFG_AES_FUSE_EFUSE_MASK) {
+		/*
+		 * 5msec delay
+		 */
+		usleep(5000);
+	}
+
 	/*
 	 * Polling the PCAP_INIT status for Reset
 	 */
@@ -644,4 +696,3 @@ int XDcfgPollDone(u32 MaskValue, u32 MaxCount)
 
 	return XST_SUCCESS;
 }
-

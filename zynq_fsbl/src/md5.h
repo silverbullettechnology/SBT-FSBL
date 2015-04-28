@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+* (c) Copyright 2012-2014 Xilinx, Inc. All rights reserved.
 *
 * This file contains confidential and proprietary information of Xilinx, Inc.
 * and is protected under U.S. and international copyright and other
@@ -105,9 +105,9 @@ typedef struct MD5Context MD5Context;
 
 /************************** Function Prototypes ******************************/
 
-void * _memset( void *dest, int ch, u32 count );
+void * MD5Memset( void *dest, int ch, u32 count );
 
-void * _memcpy( void *dest, const void *src, u32 count, boolean doByteSwap );
+void * MD5Memcpy( void *dest, const void *src, u32 count, boolean doByteSwap );
 
 void MD5Transform( u32 *buffer, u32 *intermediate );
 

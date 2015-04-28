@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+* (c) Copyright 2012-2014 Xilinx, Inc. All rights reserved.
 *
 * This file contains confidential and proprietary information of Xilinx, Inc.
 * and is protected under U.S. and international copyright and other
@@ -63,7 +63,6 @@
 #include "fsbl.h"
 #include "xstatus.h"
 #include "fsbl_hooks.h"
-
 #include "xgpiops.h"
 
 /************************** Variable Definitions *****************************/
@@ -140,6 +139,15 @@ u32 FsblHookAfterBitstreamDload(void)
 ****************************************************************************/
 u32 FsblHookBeforeHandoff(void)
 {
+	u32 Status;
+
+	Status = XST_SUCCESS;
+
+	/*
+	 * User logic to be added here.
+	 * Errors to be stored in the status variable and returned
+	 */
+	fsbl_printf(DEBUG_INFO,"In FsblHookBeforeHandoff function \r\n");
 
 #define EMIO_BANK		XGPIOPS_BANK2	/* Bank to be used for emio */
 #define GPIO_DEVICE_ID  	XPAR_XGPIOPS_0_DEVICE_ID
@@ -149,15 +157,8 @@ u32 FsblHookBeforeHandoff(void)
 	XGpioPs_Config *ConfigPtr;
 	volatile int Delay;
 
-	u32 Status;
-
 	Status = XST_SUCCESS;
 
-	/*
-	 * User logic to be added here.
-	 * Errors to be stored in the status variable and returned
-	 */
-	fsbl_printf(DEBUG_GENERAL,"In FsblHookBeforeHandoff function D1\r\n");
 
     //need to enable ADI reset pins
 
@@ -250,6 +251,7 @@ u32 FsblHookBeforeHandoff(void)
     *(int*) 0xf8000004 = 0x767B;*/
 
 	fsbl_printf(DEBUG_GENERAL, "Reset Complete\r\n");
+
 
 	return (Status);
 }

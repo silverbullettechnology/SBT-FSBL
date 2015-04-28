@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+* (c) Copyright 2012-2014 Xilinx, Inc. All rights reserved.
 *
 * This file contains confidential and proprietary information of Xilinx, Inc.
 * and is protected under U.S. and international copyright and other
@@ -51,6 +51,7 @@
 * Ver	Who	Date		Changes
 * ----- ---- -------- -------------------------------------------------------
 * 1.00a jz	04/28/11 Initial release
+* 7.00a kc  10/18/13 Integrated SD/MMC driver
 *
 * </pre>
 *
@@ -61,7 +62,13 @@
 /***************************** Include Files *********************************/
 #include "xparameters.h"
 #include "fsbl.h"
-#ifdef XPAR_PS7_SD_0_S_AXI_BASEADDR
+
+#if defined(XPAR_PS7_SD_0_S_AXI_BASEADDR) || defined(XPAR_XSDPS_0_BASEADDR)
+
+#ifndef XPAR_PS7_SD_0_S_AXI_BASEADDR
+#define XPAR_PS7_SD_0_S_AXI_BASEADDR XPAR_XSDPS_0_BASEADDR
+#endif
+
 #include "xstatus.h"
 
 #include "ff.h"
@@ -107,7 +114,7 @@ u32 InitSD(const char *filename)
 
 	/* Register volume work area, initialize device */
 	rc = f_mount(0, &fatfs);
-	fsbl_printf(DEBUG_INFO,"SD: r c= %.8x\n\r", rc);
+	fsbl_printf(DEBUG_INFO,"SD: rc= %.8x\n\r", rc);
 
 	if (rc != FR_OK) {
 		return XST_FAILURE;

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+* (c) Copyright 2012-2014 Xilinx, Inc. All rights reserved.
 *
 * This file contains confidential and proprietary information of Xilinx, Inc.
 * and is protected under U.S. and international copyright and other
@@ -51,7 +51,18 @@
 * Ver	Who	Date		Changes
 * ----- ---- -------- -------------------------------------------------------
 * 4.00a sgd	02/28/13 Initial release
-*
+* 6.00a kc	07/30/13 Added FSBL_DEBUG_RSA to print more RSA buffers
+* 					 Fix for CR#724165 - Partition Header used by FSBL is
+*                                        not authenticated
+*                    Fix for CR#724166 - FSBL doesn’t use PPK authenticated
+*                                        by Boot ROM for authenticating
+*                                        the Partition images
+*                    Fix for CR#722979 - Provide customer-friendly
+*                                        changelogs in FSBL
+* 9.00a kc  04/16/14 Fix for CR#724166 - SetPpk() will fail on secure
+*					 					 fallback unless FSBL* and FSBL are
+*					 					 identical in length
+*					 Fix for CR#791245 - Use of xilrsa in FSBL
 * </pre>
 *
 * @note
@@ -61,6 +72,7 @@
 /***************************** Include Files *********************************/
 #include "fsbl.h"
 #include "rsa.h"
+#include "xilrsa.h"
 
 #ifdef	XPAR_XWDTPS_0_BASEADDR
 #include "xwdtps.h"
@@ -82,8 +94,102 @@ extern XWdtPs Watchdog;	/* Instance of WatchDog Timer	*/
 
 /************************** Variable Definitions *****************************/
 
-
 #ifdef RSA_SUPPORT
+static u8 *PpkModular;
+static u8 *PpkModularEx;
+static u32	PpkExp;
+static u32 PpkAlreadySet=0;
+
+extern u32 FsblLength;
+
+void FsblPrintArray (u8 *Buf, u32 Len, char *Str)
+{
+#ifdef FSBL_DEBUG_RSA
+	int Index;
+	fsbl_printf(DEBUG_INFO, "%s START\r\n", Str);
+	for (Index=0;Index<Len;Index++)
+	{
+		fsbl_printf(DEBUG_INFO, "%02x",Buf[Index]);
+		if ((Index+1)%16 == 0){
+			fsbl_printf(DEBUG_INFO, "\r\n");
+		}
+	}
+	fsbl_printf(DEBUG_INFO, "\r\n %s END\r\n",Str);
+#endif
+	return;
+}
+
+
+/*****************************************************************************/
+/**
+*
+* This function is used to set ppk pointer to ppk in OCM
+*
+* @param	None
+*
+* @return
+*
+* @note		None
+*
+******************************************************************************/
+
+void SetPpk(void )
+{
+	u32 PadSize;
+	u8 *PpkPtr;
+	
+	/*
+	 * Set PPK only if is not already set
+	 */
+	if(PpkAlreadySet == 0)
+	{
+	
+		/*
+		 * Set PpkPtr to PPK in OCM
+		 */
+	 
+		/*
+		 * Skip FSBL Length
+		 */
+		PpkPtr = (u8 *)(FsblLength);
+		/*
+		 * Skip to 64 byte Boundary
+		 */
+		PadSize = ((u32)PpkPtr % 64);
+		if(PadSize != 0)
+		{
+			PpkPtr += (64 - PadSize);
+		}
+
+		/*
+		 * Increment the pointer by authentication Header size
+		 */
+		PpkPtr += RSA_HEADER_SIZE;
+
+		/*
+		 * Increment the pointer by Magic word size
+		 */
+		PpkPtr += RSA_MAGIC_WORD_SIZE;
+
+		/*
+		 * Set pointer to PPK
+		 */
+		PpkModular = (u8 *)PpkPtr;
+		PpkPtr += RSA_PPK_MODULAR_SIZE;
+		PpkModularEx = (u8 *)PpkPtr;
+		PpkPtr += RSA_PPK_MODULAR_EXT_SIZE;
+		PpkExp = *((u32 *)PpkPtr);
+	
+		/*
+		 * Setting variable to avoid resetting PPK pointers
+		 */
+		PpkAlreadySet=1;
+	}
+	
+	return;
+}
+
+
 /*****************************************************************************/
 /**
 *
@@ -98,16 +204,13 @@ extern XWdtPs Watchdog;	/* Instance of WatchDog Timer	*/
 * @note		None
 *
 ******************************************************************************/
-u32 AuthenticateParition(u8 *Buffer, u32 Size)
+u32 AuthenticatePartition(u8 *Buffer, u32 Size)
 {
 	u8 DecryptSignature[256];
 	u8 HashSignature[32];
 	u8 *SpkModular;
 	u8 *SpkModularEx;
-	u8 *PpkModular;
-	u8 *PpkModularEx;
 	u32 SpkExp;
-	u32	PpkExp;
 	u8 *SignaturePtr;
 	u32 Status;
 
@@ -134,21 +237,19 @@ u32 AuthenticateParition(u8 *Buffer, u32 Size)
 	SignaturePtr += RSA_MAGIC_WORD_SIZE;
 
 	/*
-	 * Set pointer to PPK
+	 * Increment the pointer beyond the PPK
 	 */
-	PpkModular = (u8 *)SignaturePtr;
 	SignaturePtr += RSA_PPK_MODULAR_SIZE;
-	PpkModularEx = (u8 *)SignaturePtr;
 	SignaturePtr += RSA_PPK_MODULAR_EXT_SIZE;
-	PpkExp = *((u32 *)SignaturePtr);
 	SignaturePtr += RSA_PPK_EXPO_SIZE;
 
 	/*
 	 * Calculate Hash Signature
 	 */
-	sha_256((u8 *)SignaturePtr, (RSA_PPK_MODULAR_EXT_SIZE +
-				RSA_PPK_EXPO_SIZE + RSA_SPK_MODULAR_SIZE),
+	sha_256((u8 *)SignaturePtr, (RSA_SPK_MODULAR_EXT_SIZE +
+				RSA_SPK_EXPO_SIZE + RSA_SPK_MODULAR_SIZE),
 				HashSignature);
+	FsblPrintArray(HashSignature, 32, "SPK Hash Calculated");
 
    	/*
    	 * Extract SPK signature
@@ -168,6 +269,9 @@ u32 AuthenticateParition(u8 *Buffer, u32 Size)
 			(u32)PpkExp,
 			(RSA_NUMBER)PpkModular,
 			(RSA_NUMBER)PpkModularEx);
+	FsblPrintArray(DecryptSignature, RSA_SPK_SIGNATURE_SIZE,
+					"SPK Decrypted Hash");
+
 
 	Status = RecreatePaddingAndCheck(DecryptSignature, HashSignature);
 	if (Status != XST_SUCCESS) {
@@ -185,6 +289,8 @@ u32 AuthenticateParition(u8 *Buffer, u32 Size)
 			(u32)SpkExp,
 			(RSA_NUMBER)SpkModular,
 			(RSA_NUMBER)SpkModularEx);
+	FsblPrintArray(DecryptSignature, RSA_PARTITION_SIGNATURE_SIZE,
+					"Partition Decrypted Hash");
 
 	/*
 	 * Partition Authentication
@@ -193,6 +299,8 @@ u32 AuthenticateParition(u8 *Buffer, u32 Size)
 	sha_256((u8 *)Buffer,
 			(Size - RSA_PARTITION_SIGNATURE_SIZE),
 			HashSignature);
+	FsblPrintArray(HashSignature, 32,
+						"Partition Hash Calculated");
 
 	Status = RecreatePaddingAndCheck(DecryptSignature, HashSignature);
 	if (Status != XST_SUCCESS) {

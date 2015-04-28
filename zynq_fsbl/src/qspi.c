@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+* (c) Copyright 2012-2014 Xilinx, Inc. All rights reserved.
 *
 * This file contains confidential and proprietary information of Xilinx, Inc.
 * and is protected under U.S. and international copyright and other
@@ -58,6 +58,16 @@
 * 					 divisor 8
 * 5.00a sgd	05/17/13 Added Flash Size > 128Mbit support
 * 					 Dual Stack support
+*					 Fix for CR:721674 - FSBL- Failed to boot from Dual
+*					                     stacked QSPI
+* 6.00a kc  08/30/13 Fix for CR#722979 - Provide customer-friendly
+*                                        changelogs in FSBL
+*                    Fix for CR#739711 - FSBL not able to read Large QSPI
+*                    					 (512M) in IO Mode
+* 7.00a kc  10/25/13 Fix for CR#739968 - FSBL should do the QSPI config
+*                    					 settings for Dual parallel
+*                    					 configuration in IO mode
+*
 * </pre>
 *
 * @note
@@ -143,6 +153,15 @@
 					 LQSPI_CR_1_DUMMY_BYTE | \
 					 LQSPI_CR_FAST_QUAD_READ)
 
+#define SINGLE_QSPI_IO_CONFIG_QUAD_READ	(LQSPI_CR_1_DUMMY_BYTE | \
+					 LQSPI_CR_FAST_QUAD_READ)
+
+#define DUAL_QSPI_IO_CONFIG_QUAD_READ	(XQSPIPS_LQSPI_CR_TWO_MEM_MASK | \
+					 XQSPIPS_LQSPI_CR_SEP_BUS_MASK | \
+					 LQSPI_CR_1_DUMMY_BYTE | \
+					 LQSPI_CR_FAST_QUAD_READ)
+
+
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -174,7 +193,7 @@ u8 WriteBuffer[DATA_OFFSET + DUMMY_SIZE];
 *
 * @return	None
 *
-* @note		None  
+* @note		None
 *
 ****************************************************************************/
 u32 InitQspi(void)
@@ -228,6 +247,8 @@ u32 InitQspi(void)
 	}
 
 	if (XPAR_PS7_QSPI_0_QSPI_MODE == SINGLE_FLASH_CONNECTION) {
+
+		fsbl_printf(DEBUG_INFO,"QSPI is in single flash connection\r\n");
 		/*
 		 * For Flash size <128Mbit controller configured in linear mode
 		 */
@@ -249,10 +270,22 @@ u32 InitQspi(void)
 			 * Enable the controller
 			 */
 			XQspiPs_Enable(QspiInstancePtr);
+		} else {
+			/*
+			 * Single flash IO read
+			 */
+			XQspiPs_SetLqspiConfigReg(QspiInstancePtr, SINGLE_QSPI_IO_CONFIG_QUAD_READ);
+
+			/*
+			 * Enable the controller
+			 */
+			XQspiPs_Enable(QspiInstancePtr);
 		}
 	}
 
 	if (XPAR_PS7_QSPI_0_QSPI_MODE == DUAL_PARALLEL_CONNECTION) {
+
+		fsbl_printf(DEBUG_INFO,"QSPI is in Dual Parallel connection\r\n");
 		/*
 		 * For Single Flash size <128Mbit controller configured in linear mode
 		 */
@@ -277,6 +310,17 @@ u32 InitQspi(void)
 			 * Enable the controller
 			 */
 			XQspiPs_Enable(QspiInstancePtr);
+		} else {
+			/*
+			 * Dual flash IO read
+			 */
+			XQspiPs_SetLqspiConfigReg(QspiInstancePtr, DUAL_QSPI_IO_CONFIG_QUAD_READ);
+
+			/*
+			 * Enable the controller
+			 */
+			XQspiPs_Enable(QspiInstancePtr);
+
 		}
 
 		/*
@@ -289,6 +333,8 @@ u32 InitQspi(void)
 	 * It is expected to same flash size for both chip selection
 	 */
 	if (XPAR_PS7_QSPI_0_QSPI_MODE == DUAL_STACK_CONNECTION) {
+
+		fsbl_printf(DEBUG_INFO,"QSPI is in Dual Stack connection\r\n");
 
 		QspiFlashSize = 2 * QspiFlashSize;
 
@@ -457,6 +503,13 @@ u32 QspiAccess( u32 SourceAddress, u32 DestinationAddress, u32 LengthBytes)
 		 */
 		BufferPtr = (u8*)DestinationAddress;
 
+		/*
+		 * Dual parallel connection actual flash is half
+		 */
+		if (XPAR_PS7_QSPI_0_QSPI_MODE == DUAL_PARALLEL_CONNECTION) {
+			SourceAddress = SourceAddress/2;
+		}
+
 		while(LengthBytes > 0) {
 			/*
 			 * Local of DATA_SIZE size used for read/write buffer
@@ -465,13 +518,6 @@ u32 QspiAccess( u32 SourceAddress, u32 DestinationAddress, u32 LengthBytes)
 				Length = DATA_SIZE;
 			} else {
 				Length = LengthBytes;
-			}
-
-			/*
-			 * Dual parallel connection actual flash is half
-			 */
-			if (XPAR_PS7_QSPI_0_QSPI_MODE == DUAL_PARALLEL_CONNECTION) {
-				SourceAddress = SourceAddress/2;
 			}
 
 			/*
@@ -499,20 +545,12 @@ u32 QspiAccess( u32 SourceAddress, u32 DestinationAddress, u32 LengthBytes)
 					SourceAddress = SourceAddress - (QspiFlashSize/2);
 
 					fsbl_printf(DEBUG_INFO, "stacked - upper CS \n\r");
-				} else {
+
 					/*
-					 * Set selection to L_PAGE
+					 * Assert the FLASH chip select.
 					 */
-					XQspiPs_SetLqspiConfigReg(QspiInstancePtr,
-							LqspiCrReg & (~XQSPIPS_LQSPI_CR_U_PAGE_MASK));
-
-					fsbl_printf(DEBUG_INFO, "stacked - lower CS \n\r");
+					XQspiPs_SetSlaveSelect(QspiInstancePtr);
 				}
-
-				/*
-				 * Assert the FLASH chip select.
-				 */
-				XQspiPs_SetSlaveSelect(QspiInstancePtr);
 			}
 
 			/*
@@ -536,10 +574,27 @@ u32 QspiAccess( u32 SourceAddress, u32 DestinationAddress, u32 LengthBytes)
 			 * If data to be read spans beyond the current bank, then
 			 * calculate length in current bank else no change in length
 			 */
-			if((SourceAddress & BANKMASK) != ((SourceAddress + Length) & BANKMASK))
-			{
-				Length = (SourceAddress & BANKMASK) + FLASH_SIZE_16MB - SourceAddress;
-				BankSwitchFlag = 1;
+			if (XPAR_PS7_QSPI_0_QSPI_MODE == DUAL_PARALLEL_CONNECTION) {
+				/*
+				 * In dual parallel mode, check should be for half
+				 * the length.
+				 */
+				if((SourceAddress & BANKMASK) != ((SourceAddress + (Length/2)) & BANKMASK))
+				{
+					Length = (SourceAddress & BANKMASK) + FLASH_SIZE_16MB - SourceAddress;
+					/*
+					 * Above length calculated is for single flash
+					 * Length should be doubled since dual parallel
+					 */
+					Length = Length * 2;
+					BankSwitchFlag = 1;
+				}
+			} else {
+				if((SourceAddress & BANKMASK) != ((SourceAddress + Length) & BANKMASK))
+				{
+					Length = (SourceAddress & BANKMASK) + FLASH_SIZE_16MB - SourceAddress;
+					BankSwitchFlag = 1;
+				}
 			}
 
 			/*
@@ -556,7 +611,16 @@ u32 QspiAccess( u32 SourceAddress, u32 DestinationAddress, u32 LengthBytes)
 			 * Updated the variables
 			 */
 			LengthBytes -= Length;
-			SourceAddress += Length;
+
+			/*
+			 * For Dual parallel connection address increment should be half
+			 */
+			if (XPAR_PS7_QSPI_0_QSPI_MODE == DUAL_PARALLEL_CONNECTION) {
+				SourceAddress += Length/2;
+			} else {
+				SourceAddress += Length;
+			}
+
 			BufferPtr = (u8*)((u32)BufferPtr + Length);
 		}
 
@@ -567,6 +631,22 @@ u32 QspiAccess( u32 SourceAddress, u32 DestinationAddress, u32 LengthBytes)
 		if (Status != XST_SUCCESS) {
 			fsbl_printf(DEBUG_INFO, "Bank Selection Reset Failed\n\r");
 			return XST_FAILURE;
+		}
+
+		if (XPAR_PS7_QSPI_0_QSPI_MODE == DUAL_STACK_CONNECTION) {
+
+			/*
+			 * Reset selection to L_PAGE
+			 */
+			XQspiPs_SetLqspiConfigReg(QspiInstancePtr,
+					LqspiCrReg & (~XQSPIPS_LQSPI_CR_U_PAGE_MASK));
+
+			fsbl_printf(DEBUG_INFO, "stacked - lower CS \n\r");
+
+			/*
+			 * Assert the FLASH chip select.
+			 */
+			XQspiPs_SetSlaveSelect(QspiInstancePtr);
 		}
 	}
 

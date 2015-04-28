@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* (c) Copyright 2011-2013 Xilinx, Inc. All rights reserved.
+* (c) Copyright 2011-2014 Xilinx, Inc. All rights reserved.
 *
 * This file contains confidential and proprietary information of Xilinx, Inc.
 * and is protected under U.S. and international copyright and other
@@ -58,10 +58,26 @@
 * 			 			Nand/SD encryption and review comments
 * 3.00a np	08/30/12	Added FSBL user hook calls
 * 						(before and after bitstream download.)
-* 4.00a sgd	02/28/13	Fix for CR#691148
-*						Fix for CR#695578
+* 4.00a sgd	02/28/13	Fix for CR#691148 Secure bootmode error in devcfg test
+*						Fix for CR#695578 FSBL failed to load standalone 
+*						application in secure bootmode
 *
-* 4.00a sgd	04/23/13	Fix for CR#710128
+* 4.00a sgd	04/23/13	Fix for CR#710128 FSBL failed to load standalone 
+*						application in secure bootmode
+* 5.00a kc	07/30/13	Fix for CR#724165 Partition Header used by FSBL 
+*						is not authenticated
+* 						Fix for CR#724166 FSBL doesn�t use PPK authenticated 
+*						by Boot ROM for authenticating the Partition images 
+* 						Fix for CR#732062 FSBL fails to build if UART not 
+*						available 
+* 7.00a kc  10/30/13    Fix for CR#755245 FSBL does not load partition
+*                       if eMMC has only one partition
+* 8.00a kc  01/16/13    Fix for CR#767798  FSBL MD5 Checksum failure
+* 						for encrypted images
+*						Fix for CR#761895 FSBL should authenticate image
+*						only if partition owner was not set to u-boot
+* 9.00a kc  04/16/14    Fix for CR#785778  FSBL takes 8 seconds to 
+* 						authenticate (RSA) a bitstream on zc706
 *
 * </pre>
 *
@@ -85,6 +101,7 @@
 
 #ifdef RSA_SUPPORT
 #include "rsa.h"
+#include "xil_cache.h"
 #endif
 /************************** Constant Definitions *****************************/
 
@@ -121,6 +138,7 @@ ImageMoverType MoveImage;
  */
 PartHeader PartitionHeader[MAX_PARTITION_NUMBER];
 u32 PartitionCount;
+u32 FsblLength;
 
 #ifdef XPAR_XWDTPS_0_BASEADDR
 extern XWdtPs Watchdog;	/* Instance of WatchDog Timer	*/
@@ -162,7 +180,10 @@ u32 LoadBootImage(void)
 	u8 ExecAddrFlag = 0 ;
 	u32 Status;
 	PartHeader *HeaderPtr;
-
+	u32 EfuseStatusRegValue;
+#ifdef RSA_SUPPORT
+	u32 HeaderSize;
+#endif
 	/*
 	 * Resetting the Flags
 	 */
@@ -218,6 +239,55 @@ u32 LoadBootImage(void)
 		FsblFallback();
 	}
 
+	/*
+	 * RSA is not implemented in 1.0 and 2.0
+	 * silicon
+	 */
+	if ((Silicon_Version != SILICON_VERSION_1) &&
+			(Silicon_Version != SILICON_VERSION_2)) {
+		/*
+		 * Read Efuse Status Register
+		 */
+		EfuseStatusRegValue = Xil_In32(EFUSE_STATUS_REG);
+		if (EfuseStatusRegValue & EFUSE_STATUS_RSA_ENABLE_MASK) {
+			fsbl_printf(DEBUG_GENERAL,"RSA enabled for Chip\r\n");
+#ifdef RSA_SUPPORT
+			/*
+			 * Set the Ppk
+			 */
+			SetPpk();
+
+			/*
+			 * Read partition header with signature
+			 */
+			Status = GetImageHeaderAndSignature(ImageStartAddress,
+					(u32 *)DDR_TEMP_START_ADDR);
+			if (Status != XST_SUCCESS) {
+				fsbl_printf(DEBUG_GENERAL,
+						"Read Partition Header signature Failed\r\n");
+				OutputStatus(GET_HEADER_INFO_FAIL);
+				FsblFallback();
+			}
+			HeaderSize=TOTAL_HEADER_SIZE+RSA_SIGNATURE_SIZE;
+
+			Status = AuthenticatePartition((u8 *)DDR_TEMP_START_ADDR, HeaderSize);
+			if (Status != XST_SUCCESS) {
+				fsbl_printf(DEBUG_GENERAL,
+						"Partition Header signature Failed\r\n");
+				OutputStatus(GET_HEADER_INFO_FAIL);
+				FsblFallback();
+			}
+#else
+			/*
+			 * In case user not enabled RSA authentication feature
+			 */
+			fsbl_printf(DEBUG_GENERAL,"RSA_SUPPORT_NOT_ENABLED_FAIL\r\n");
+			OutputStatus(RSA_SUPPORT_NOT_ENABLED_FAIL);
+			FsblFallback();
+#endif
+		}
+	}
+
 #ifdef MMC_SUPPORT
 	/*
 	 * In case of MMC support
@@ -265,15 +335,23 @@ u32 LoadBootImage(void)
 		PartitionStartAddr = HeaderPtr->PartitionStart;
 		PartitionTotalSize = HeaderPtr->PartitionWordLen;
 
-		xil_printf("\r\nPartitionDataLength: %x\r\n", PartitionDataLength);
-		xil_printf("PartitionImageLength: %x\r\n", PartitionImageLength);
-		xil_printf("PartitionExecAddr: %x\r\n", PartitionExecAddr);
-		xil_printf("PartitionAttr: %x\r\n", PartitionAttr);
-		xil_printf("PartitionLoadAddr: %x\r\n", PartitionLoadAddr);
-		xil_printf("PartitionChecksumOffset: %x\r\n", PartitionChecksumOffset);
-		xil_printf("PartitionStartAddr: %x\r\n", PartitionStartAddr);
-		xil_printf("PartitionTotalSize: %x\r\n", PartitionTotalSize);
-
+		/*
+		 * Partition owner should be FSBL to validate the partition
+		 */
+		if ((PartitionAttr & ATTRIBUTE_PARTITION_OWNER_MASK) !=
+				ATTRIBUTE_PARTITION_OWNER_FSBL) {
+			/*
+			 * if FSBL is not the owner of partition,
+			 * skip this partition, continue with next partition
+			 */
+			 fsbl_printf(DEBUG_INFO, "Skipping partition %0x\r\n", 
+			 							PartitionNum);
+			/*
+			 * Increment partition number
+			 */
+			PartitionNum++;
+			continue;
+		}
 
 		if (PartitionAttr & ATTRIBUTE_PL_IMAGE_MASK) {
 			fsbl_printf(DEBUG_INFO, "Bitstream\r\n");
@@ -281,9 +359,11 @@ u32 LoadBootImage(void)
 			PSPartitionFlag = 0;
 			BitstreamFlag = 1;
 			if (ApplicationFlag == 1) {
+#ifdef STDOUT_BASEADDRESS
 				xil_printf("\r\nFSBL Warning !!!"
 						"Bitstream not loaded into PL\r\n");
-                xil_printf("Partition order invalid\r\n");                   
+                xil_printf("Partition order invalid\r\n");
+#endif
 				break;
 			}
 		}
@@ -412,7 +492,8 @@ u32 LoadBootImage(void)
 			 */
 			if (SignedPartitionFlag == 1 ) {
 #ifdef RSA_SUPPORT
-				Status = AuthenticateParition((u8*)PartitionStartAddr,
+				Xil_DCacheEnable();
+				Status = AuthenticatePartition((u8*)PartitionStartAddr,
 						(PartitionTotalSize << WORD_LENGTH_SHIFT));
 				if (Status != XST_SUCCESS) {
 					fsbl_printf(DEBUG_GENERAL,"AUTHENTICATION_FAIL\r\n");
@@ -420,6 +501,8 @@ u32 LoadBootImage(void)
 					FsblFallback();
 				}
 				fsbl_printf(DEBUG_INFO,"Authentication Done\r\n");
+				Xil_DCacheFlush();
+                Xil_DCacheDisable();
 #else
 				/*
 				 * In case user not enabled RSA authentication feature
@@ -500,6 +583,16 @@ u32 GetPartitionHeaderInfo(u32 ImageBaseAddress)
     u32 PartitionHeaderOffset;
     u32 Status;
 
+
+    /*
+     * Get the length of the FSBL from BootHeader
+     */
+    Status = GetFsblLength(ImageBaseAddress, &FsblLength);
+    if (Status != XST_SUCCESS) {
+    	fsbl_printf(DEBUG_GENERAL, "Get Header Start Address Failed\r\n");
+    	return XST_FAILURE;
+    }
+
     /*
     * Get the start address of the partition header table
     */
@@ -541,11 +634,12 @@ u32 GetPartitionHeaderInfo(u32 ImageBaseAddress)
     if (PartitionCount >= MAX_PARTITION_NUMBER) {
         fsbl_printf(DEBUG_GENERAL, "Invalid Partition Count\r\n");
 		return XST_FAILURE;
-
+#ifndef MMC_SUPPORT
     } else if (PartitionCount <= 1) {
         fsbl_printf(DEBUG_GENERAL, "There is no partition to load\r\n");
 		return XST_FAILURE;
-    }
+#endif
+	}
 
     return XST_SUCCESS;
 }
@@ -579,6 +673,104 @@ u32 GetPartitionHeaderStartAddr(u32 ImageAddress, u32 *Offset)
 	return XST_SUCCESS;
 }
 
+/*****************************************************************************/
+/**
+*
+* This function goes to the partition header of the specified partition
+*
+* @param	ImageAddress is the start address of the image
+*
+* @return	Offset to Image header table address of the image
+*
+* @return	- XST_SUCCESS if Get Partition Header start address successful
+* 			- XST_FAILURE if Get Partition Header start address failed
+*
+* @note		None
+*
+****************************************************************************/
+u32 GetImageHeaderStartAddr(u32 ImageAddress, u32 *Offset)
+{
+	u32 Status;
+
+	Status = MoveImage(ImageAddress + IMAGE_HDR_OFFSET, (u32)Offset, 4);
+	if (Status != XST_SUCCESS) {
+		fsbl_printf(DEBUG_GENERAL,"Move Image failed\r\n");
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+/*****************************************************************************/
+/**
+*
+* This function gets the length of the FSBL
+*
+* @param	ImageAddress is the start address of the image
+*
+* @return	FsblLength is the length of the fsbl
+*
+* @return	- XST_SUCCESS if fsbl length reading is successful
+* 			- XST_FAILURE if fsbl length reading failed
+*
+* @note		None
+*
+****************************************************************************/
+u32 GetFsblLength(u32 ImageAddress, u32 *FsblLength)
+{
+	u32 Status;
+
+	Status = MoveImage(ImageAddress + IMAGE_TOT_BYTE_LEN_OFFSET,
+							(u32)FsblLength, 4);
+	if (Status != XST_SUCCESS) {
+		fsbl_printf(DEBUG_GENERAL,"Move Image failed reading FsblLength\r\n");
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+
+#ifdef RSA_SUPPORT
+/*****************************************************************************/
+/**
+*
+* This function goes to read the image headers and its signature. Image
+* header consists of image header table, image headers, partition
+* headers
+*
+* @param	ImageBaseAddress is the start address of the image header
+*
+* @return	Offset Partition header address of the image
+*
+* @return	- XST_SUCCESS if Get Partition Header start address successful
+* 			- XST_FAILURE if Get Partition Header start address failed
+*
+* @note		None
+*
+****************************************************************************/
+u32 GetImageHeaderAndSignature(u32 ImageBaseAddress, u32 *Offset)
+{
+	u32 Status;
+	u32 ImageHeaderOffset;
+
+	/*
+	 * Get the start address of the partition header table
+	 */
+	Status = GetImageHeaderStartAddr(ImageBaseAddress, &ImageHeaderOffset);
+	if (Status != XST_SUCCESS) {
+		fsbl_printf(DEBUG_GENERAL, "Get Header Start Address Failed\r\n");
+		return XST_FAILURE;
+	}
+
+	Status = MoveImage(ImageBaseAddress+ImageHeaderOffset, (u32)Offset,
+							TOTAL_HEADER_SIZE + RSA_SIGNATURE_SIZE);
+	if (Status != XST_SUCCESS) {
+		fsbl_printf(DEBUG_GENERAL,"Move Image failed\r\n");
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+#endif
 /*****************************************************************************/
 /**
 *
@@ -881,9 +1073,10 @@ u32 PartitionMove(u32 ImageBaseAddress, PartHeader *Header)
 	}
 
 	/*
-	 * For Signed partition, Total partition image need to copied to DDR
+	 * For Signed or checksum enabled partition, 
+	 * Total partition image need to copied to DDR
 	 */
-	if (SignedPartitionFlag) {
+	if (SignedPartitionFlag || PartitionChecksumFlag) {
 		ImageWordLen = Header->PartitionWordLen;
 		DataWordLen = Header->PartitionWordLen;
 	}
