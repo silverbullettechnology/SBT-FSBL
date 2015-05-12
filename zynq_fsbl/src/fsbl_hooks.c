@@ -196,10 +196,10 @@ u32 FsblHookBeforeHandoff(void)
 	XGpioPs_SetOutputEnablePin(&Gpio, 71, 1);
 	XGpioPs_WritePin(&Gpio, 71, 0x1);
 
-	//USB Reset
+	//VCTCXO Control Voltage switch
 	XGpioPs_SetDirectionPin(&Gpio, 83, 1);
 	XGpioPs_SetOutputEnablePin(&Gpio, 83, 1);
-	XGpioPs_WritePin(&Gpio, 83, 0x1);
+	XGpioPs_WritePin(&Gpio, 83, 0x0);
 
 	//Emmc Reset
 	XGpioPs_SetDirectionPin(&Gpio, 88, 1);
