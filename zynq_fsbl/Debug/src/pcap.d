@@ -17,7 +17,7 @@ src/pcap.d: ../src/pcap.c ../src/pcap.h \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/xpseudo_asm.h \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/xil_printf.h \
  ../src/fsbl_debug.h \
- E:\hdl\hdl\projects\tdsdr_2chan\tdsdr\tdsdr_2chan_tdsdr.sdk\system_top_hw_platform_0/ps7_init.h \
+ E:\Silver-Bullet\C2E\Experiments\SBT-FSBL\system_top_hw_platform_0/ps7_init.h \
  ../src/image_mover.h \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/xil_exception.h \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/sleep.h \
@@ -66,7 +66,7 @@ src/pcap.d: ../src/pcap.c ../src/pcap.h \
 
 ../src/fsbl_debug.h:
 
-E:\hdl\hdl\projects\tdsdr_2chan\tdsdr\tdsdr_2chan_tdsdr.sdk\system_top_hw_platform_0/ps7_init.h:
+E:\Silver-Bullet\C2E\Experiments\SBT-FSBL\system_top_hw_platform_0/ps7_init.h:
 
 ../src/image_mover.h:
 

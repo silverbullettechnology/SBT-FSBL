@@ -153,10 +153,10 @@ Xilinx
 <B>MIO 0</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-SD 0
+GPIO
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-wp
+gpio[0]
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 LVCMOS 1.8V
@@ -168,7 +168,7 @@ slow
 enabled
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-in
+inout
 </TD>
 </TR>
 <TR valign="top">
@@ -1695,7 +1695,7 @@ Provide the Additive Latency (ns). Increases the efficiency of the command and d
 <B>DQS to Clock delay [0] (ns)</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-0.196
+.196
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 The daly difference of each DQS path delay subtracted from the clock path delay
@@ -1706,7 +1706,7 @@ The daly difference of each DQS path delay subtracted from the clock path delay
 <B>DQS to Clock delay [1] (ns)</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-0.198
+.198
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 The daly difference of each DQS path delay subtracted from the clock path delay
@@ -1717,7 +1717,7 @@ The daly difference of each DQS path delay subtracted from the clock path delay
 <B>DQS to Clock delay [2] (ns)</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-0.194
+.194
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 The daly difference of each DQS path delay subtracted from the clock path delay
@@ -1728,7 +1728,7 @@ The daly difference of each DQS path delay subtracted from the clock path delay
 <B>DQS to Clock delay [3] (ns)</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-0.143
+.143
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 The daly difference of each DQS path delay subtracted from the clock path delay
@@ -1739,7 +1739,7 @@ The daly difference of each DQS path delay subtracted from the clock path delay
 <B>Board delay [0] (ns)</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-0.446
+.446
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 The average of the data midpoint delay, of the data delays associated with a byte lane (DDR_DQ, DDR_DM) averaged with the midpoint of the cloc kdelays (DDR_CK, DR_CK_N)
@@ -1750,7 +1750,7 @@ The average of the data midpoint delay, of the data delays associated with a byt
 <B>Board delay [1] (ns)</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-0.448
+.448
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 The average of the data midpoint delay, of the data delays associated with a byte lane (DDR_DQ, DDR_DM) averaged with the midpoint of the cloc kdelays (DDR_CK, DR_CK_N)
@@ -1761,7 +1761,7 @@ The average of the data midpoint delay, of the data delays associated with a byt
 <B>Board delay [2] (ns)</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-0.453
+.453
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 The average of the data midpoint delay, of the data delays associated with a byte lane (DDR_DQ, DDR_DM) averaged with the midpoint of the cloc kdelays (DDR_CK, DR_CK_N)
@@ -1772,7 +1772,7 @@ The average of the data midpoint delay, of the data delays associated with a byt
 <B>Board delay [3] (ns)</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-0.336
+.472
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
 The average of the data midpoint delay, of the data delays associated with a byte lane (DDR_DQ, DDR_DM) averaged with the midpoint of the cloc kdelays (DDR_CK, DR_CK_N)
@@ -1780,7 +1780,7 @@ The average of the data midpoint delay, of the data delays associated with a byt
 </TR>
 </TABLE>
 <H2><a name="ClockInfoTab">PS Clocks information</a></H2>
-<H2><a name="ClockInfoTab">PS Reference Clock : 40</a></H2>
+<H2><a name="ClockInfoTab">PS Reference Clock : 40.0</a></H2>
 <TABLE border=1 cellspacing=0 BORDERCOLOR=black WIDTH=100%">
 <TR valign="top">
 <TD width=10% BGCOLOR=#E0F8F7>
@@ -1834,7 +1834,7 @@ IO PLL
 IO PLL
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-50.000000
+125.000000
 </TD>
 </TR>
 <TR valign="top">
@@ -1845,7 +1845,7 @@ IO PLL
 IO PLL
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-50.000000
+125.000000
 </TD>
 </TR>
 <TR valign="top">
@@ -6765,10 +6765,10 @@ SLCR_LOCK
 <B>3f00</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>14</B>
+<B>8</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>1400</B>
+<B>800</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Provides the divisor used to divide the source clock to generate the required generated clock frequency.</B>
@@ -6788,7 +6788,7 @@ SLCR_LOCK
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>1403</B>
+<B>803</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>SDIO Ref Clock Control</B>
@@ -20404,10 +20404,10 @@ ddrc_ctrl
 <B>7ff</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Ratio value to be used when reg_phy_fifo_we_in_force is set to 0.</B>
@@ -20467,7 +20467,7 @@ ddrc_ctrl
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>PHY FIFO write enable configuration for data slice 0.</B>
@@ -29618,13 +29618,93 @@ SLCR_LOCK
 <B>1</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>1</B>
+<B>0</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>1</B>
+<B>0</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Tri-state enable, active high. 0: disable 1: enable</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L0_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>1:1</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>2</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 0 Mux Select 0: Level 1 Mux 1: Quad SPI 1 chip select, Output</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L1_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>2:2</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>4</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 1 Mux Select 0: Level 2 Mux 1: reserved</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L2_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>4:3</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>18</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 2 Mux Select 00: Level 3 Mux 01: SRAM/NOR Chip Select 0, Output 10: NAND Flash Chip Select, Output 11: SDIO 0 Power Control, Output</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L3_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>7:5</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>e0</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 3 Mux Select 000: GPIO 0 (bank 0), Input/Output others: reserved</B>
 </TD>
 </TR>
 <TR valign="top">
@@ -29715,13 +29795,13 @@ SLCR_LOCK
 <B>31:0</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
-<B>3f01</B>
+<B>3fff</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>1201</B>
+<B>1200</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>MIO Pin 0 Control</B>
@@ -43867,26 +43947,6 @@ SLCR_LOCK
 </TR>
 <TR valign="top">
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>SDIO0_WP_SEL</B>
-</TD>
-<TD width=15% BGCOLOR=#FBF5EF>
-<B>5:0</B>
-</TD>
-<TD width=10% BGCOLOR=#FBF5EF>
-<B>3f</B>
-</TD>
-<TD width=10% BGCOLOR=#FBF5EF>
-<B>0</B>
-</TD>
-<TD width=15% BGCOLOR=#FBF5EF>
-<B>0</B>
-</TD>
-<TD width=35% BGCOLOR=#FBF5EF>
-<B>SDIO 0 WP Select. Values 53:0 select MIO input (any pin except 7 and 8) Values 63:54 select EMIO input</B>
-</TD>
-</TR>
-<TR valign="top">
-<TD width=15% BGCOLOR=#FBF5EF>
 <B>SDIO0_CD_SEL</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
@@ -43913,7 +43973,7 @@ SLCR_LOCK
 <B>31:0</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
-<B>3f003f</B>
+<B>3f0000</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
 <B></B>
@@ -53041,10 +53101,10 @@ SLCR_LOCK
 <B>3f00</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>14</B>
+<B>8</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>1400</B>
+<B>800</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Provides the divisor used to divide the source clock to generate the required generated clock frequency.</B>
@@ -53064,7 +53124,7 @@ SLCR_LOCK
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>1403</B>
+<B>803</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>SDIO Ref Clock Control</B>
@@ -67649,10 +67709,10 @@ ddrc_ctrl
 <B>7ff</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Ratio value to be used when fifo_we_X_force_mode is set to 0.</B>
@@ -67712,7 +67772,7 @@ ddrc_ctrl
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>PHY FIFO write enable configuration for data slice 3.</B>
@@ -77063,13 +77123,93 @@ SLCR_LOCK
 <B>1</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>1</B>
+<B>0</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>1</B>
+<B>0</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Tri-state enable, active high. 0: disable 1: enable</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L0_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>1:1</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>2</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 0 Mux Select 0: Level 1 Mux 1: Quad SPI 1 chip select</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L1_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>2:2</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>4</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 1 Mux Select 0: Level 2 Mux 1: reserved</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L2_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>4:3</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>18</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 2 Mux Select 00: Level 3 Mux 01: SRAM/NOR Chip Select 0 10: NAND Flash Chip Select 11: SDIO 0 Power Control output</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L3_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>7:5</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>e0</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 3 Mux Select 000: GPIO 0 (bank 0) others: reserved</B>
 </TD>
 </TR>
 <TR valign="top">
@@ -77160,13 +77300,13 @@ SLCR_LOCK
 <B>31:0</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
-<B>3f01</B>
+<B>3fff</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>1201</B>
+<B>1200</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>MIO Pin 0 Control</B>
@@ -91312,26 +91452,6 @@ SLCR_LOCK
 </TR>
 <TR valign="top">
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>SDIO0_WP_SEL</B>
-</TD>
-<TD width=15% BGCOLOR=#FBF5EF>
-<B>5:0</B>
-</TD>
-<TD width=10% BGCOLOR=#FBF5EF>
-<B>3f</B>
-</TD>
-<TD width=10% BGCOLOR=#FBF5EF>
-<B>0</B>
-</TD>
-<TD width=15% BGCOLOR=#FBF5EF>
-<B>0</B>
-</TD>
-<TD width=35% BGCOLOR=#FBF5EF>
-<B>SDIO 0 WP Select. Values 53:0 select MIO input (any pin except 7 and 8) Values 63:54 select EMIO input</B>
-</TD>
-</TR>
-<TR valign="top">
-<TD width=15% BGCOLOR=#FBF5EF>
 <B>SDIO0_CD_SEL</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
@@ -91358,7 +91478,7 @@ SLCR_LOCK
 <B>31:0</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
-<B>3f003f</B>
+<B>3f0000</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
 <B></B>
@@ -100526,10 +100646,10 @@ SLCR_LOCK
 <B>3f00</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>14</B>
+<B>8</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>1400</B>
+<B>800</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Provides the divisor used to divide the source clock to generate the required generated clock frequency.</B>
@@ -100549,7 +100669,7 @@ SLCR_LOCK
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>1403</B>
+<B>803</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>SDIO Reference Clock Control</B>
@@ -114516,10 +114636,10 @@ ddrc_ctrl
 <B>7ff</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Ratio value to be used when fifo_we_X_force_mode is set to 0.</B>
@@ -114579,7 +114699,7 @@ ddrc_ctrl
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>90</B>
+<B>b5</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>PHY fifo write enable configuration register for data slice 0.</B>
@@ -123910,13 +124030,93 @@ SLCR_LOCK
 <B>1</B>
 </TD>
 <TD width=10% BGCOLOR=#FBF5EF>
-<B>1</B>
+<B>0</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>1</B>
+<B>0</B>
 </TD>
 <TD width=35% BGCOLOR=#FBF5EF>
 <B>Tri-state enable, active high.</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L0_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>1:1</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>2</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 0 Mux Select 0= Level 1 Mux Output 1= qspi_sel, Output, qspi_n_ss_out_upper- (QSPI Upper select)</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L1_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>2:2</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>4</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 1 Mux Select 0= Level 2 Mux Output 1= Not Used</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L2_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>4:3</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>18</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 2 Mux Select 0= Level 3 Mux Output 1= smc_cs0, Output, smc_sram_cs_n[0]- (SRAM CS0) 2= nand_cs, Output, smc_nand_cs_n- (NAND chip select) 3= sdio_pow, Output, sdio0_bus_pow- (SD card bus power)</B>
+</TD>
+</TR>
+<TR valign="top">
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>L3_SEL</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>7:5</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>e0</B>
+</TD>
+<TD width=10% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=15% BGCOLOR=#FBF5EF>
+<B>0</B>
+</TD>
+<TD width=35% BGCOLOR=#FBF5EF>
+<B>Level 3 Mux Select 0= gpio0, Input, gpio_0_pin_in[0]- (GPIO bank 0) 0= gpio0, Output, gpio_0_pin_out[0]- (GPIO bank 0) 1= Not Used 2= Not Used 3= Not Used 4= Not Used 5= Not Used 6= Not Used 7= Not Used</B>
 </TD>
 </TR>
 <TR valign="top">
@@ -124007,13 +124207,13 @@ SLCR_LOCK
 <B>31:0</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
-<B>3f01</B>
+<B>3fff</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
 <B></B>
 </TD>
 <TD width=15% BGCOLOR=#C0C0C0>
-<B>1201</B>
+<B>1200</B>
 </TD>
 <TD width=35% BGCOLOR=#C0C0C0>
 <B>MIO Control for Pin 0</B>
@@ -138159,26 +138359,6 @@ SLCR_LOCK
 </TR>
 <TR valign="top">
 <TD width=15% BGCOLOR=#FBF5EF>
-<B>SDIO0_WP_SEL</B>
-</TD>
-<TD width=15% BGCOLOR=#FBF5EF>
-<B>5:0</B>
-</TD>
-<TD width=10% BGCOLOR=#FBF5EF>
-<B>3f</B>
-</TD>
-<TD width=10% BGCOLOR=#FBF5EF>
-<B>0</B>
-</TD>
-<TD width=15% BGCOLOR=#FBF5EF>
-<B>0</B>
-</TD>
-<TD width=35% BGCOLOR=#FBF5EF>
-<B>SDIO0 WP Select. 0-53 = Selects matching MIO input however bits 7/8 are not supported and should not be used as they will conflict with the VCFG inputs. 54-63 = Selects the FMIO source</B>
-</TD>
-</TR>
-<TR valign="top">
-<TD width=15% BGCOLOR=#FBF5EF>
 <B>SDIO0_CD_SEL</B>
 </TD>
 <TD width=15% BGCOLOR=#FBF5EF>
@@ -138205,7 +138385,7 @@ SLCR_LOCK
 <B>31:0</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
-<B>3f003f</B>
+<B>3f0000</B>
 </TD>
 <TD width=10% BGCOLOR=#C0C0C0>
 <B></B>

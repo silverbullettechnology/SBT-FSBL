@@ -16,7 +16,7 @@ src/nor.d: ../src/nor.c ../src/fsbl.h \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/xstatus.h \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/xil_assert.h \
  ../src/fsbl_debug.h \
- E:\hdl\hdl\projects\tdsdr_2chan\tdsdr\tdsdr_2chan_tdsdr.sdk\system_top_hw_platform_0/ps7_init.h \
+ E:\Silver-Bullet\C2E\Experiments\SBT-FSBL\system_top_hw_platform_0/ps7_init.h \
  ../src/nor.h ../../standalone_bsp_0/ps7_cortexa9_0/include/smc.h \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/xstatus.h
 
@@ -58,7 +58,7 @@ src/nor.d: ../src/nor.c ../src/fsbl.h \
 
 ../src/fsbl_debug.h:
 
-E:\hdl\hdl\projects\tdsdr_2chan\tdsdr\tdsdr_2chan_tdsdr.sdk\system_top_hw_platform_0/ps7_init.h:
+E:\Silver-Bullet\C2E\Experiments\SBT-FSBL\system_top_hw_platform_0/ps7_init.h:
 
 ../src/nor.h:
 

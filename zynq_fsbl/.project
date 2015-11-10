@@ -27,7 +27,12 @@
 		<link>
 			<name>src/ps7_init.c</name>
 			<type>1</type>
-			<location>E:/hdl/hdl/projects/tdsdr_2chan/tdsdr/tdsdr_2chan_tdsdr.sdk/system_top_hw_platform_0/ps7_init.c</location>
+			<locationURI>PARENT-1-PROJECT_LOC/system_top_hw_platform_0/ps7_init.c</locationURI>
+		</link>
+		<link>
+			<name>src/ps7_init.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/system_top_hw_platform_0/ps7_init.h</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
