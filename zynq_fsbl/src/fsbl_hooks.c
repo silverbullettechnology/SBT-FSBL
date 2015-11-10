@@ -156,6 +156,7 @@ u32 FsblHookBeforeHandoff(void)
 
 	XGpioPs_Config *ConfigPtr;
 	volatile int Delay;
+	int i;
 
 	Status = XST_SUCCESS;
 
@@ -180,8 +181,37 @@ u32 FsblHookBeforeHandoff(void)
 	//XGpioPs_SetDirection(&Gpio, 3, 0xFFFF);
 	//XGpioPs_SetOutputEnable(&Gpio, 3, 0xFFFF);
 
+	//Shift Register Pins
+	//91 is SCK
+	//90 is MOSI
+	//75 is SS
+	XGpioPs_SetDirectionPin(&Gpio, 75, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 75, 1);
+	XGpioPs_SetDirectionPin(&Gpio, 91, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 91, 1);
+	XGpioPs_SetDirectionPin(&Gpio, 90, 1);
+	XGpioPs_SetOutputEnablePin(&Gpio, 90, 1);
+	XGpioPs_WritePin(&Gpio, 91, 0x0);
+	XGpioPs_WritePin(&Gpio, 90, 0x0);
+	XGpioPs_WritePin(&Gpio, 75, 0x0);
+	XGpioPs_WritePin(&Gpio, 75, 0x1);
 
+	for(i=0; i<9; i++){
+		for (Delay = 0; Delay < 5000; Delay++);
+		XGpioPs_WritePin(&Gpio, 91, 0x0);
+		for (Delay = 0; Delay < 5000; Delay++);
+		XGpioPs_WritePin(&Gpio, 91, 0x1);
+	}
 
+	for (Delay = 0; Delay < 5000; Delay++);
+	XGpioPs_WritePin(&Gpio, 91, 0x0);
+
+	for (Delay = 0; Delay < 5000; Delay++);
+	XGpioPs_WritePin(&Gpio, 75, 0x1);
+	for (Delay = 0; Delay < 5000; Delay++);
+	XGpioPs_WritePin(&Gpio, 75, 0x0);
+	for (Delay = 0; Delay < 5000; Delay++);
+	XGpioPs_WritePin(&Gpio, 75, 0x1);
 
 	//ADI Pins
 	XGpioPs_SetDirectionPin(&Gpio, 58, 1);
@@ -196,10 +226,10 @@ u32 FsblHookBeforeHandoff(void)
 	XGpioPs_SetOutputEnablePin(&Gpio, 71, 1);
 	XGpioPs_WritePin(&Gpio, 71, 0x1);
 
-	//USB Reset
-	XGpioPs_SetDirectionPin(&Gpio, 83, 1);
-	XGpioPs_SetOutputEnablePin(&Gpio, 83, 1);
-	XGpioPs_WritePin(&Gpio, 83, 0x1);
+	//VCTCXO Control Voltage switch
+	//XGpioPs_SetDirectionPin(&Gpio, 83, 1);
+	//XGpioPs_SetOutputEnablePin(&Gpio, 83, 1);
+	//XGpioPs_WritePin(&Gpio, 83, 0x0);
 
 	//Emmc Reset
 	XGpioPs_SetDirectionPin(&Gpio, 88, 1);
