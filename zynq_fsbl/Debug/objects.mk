@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lrsa -Wl,--start-group,-lxil,-lgcc,-lc,--end-group -Wl,--start-group,-lrsa,-lxil,-lgcc,-lc,--end-group -Wl,--start-group,-lxilffs,-lxil,-lgcc,-lc,--end-group -Wl,--start-group,-lxilskey,-lxil,-lgcc,-lc,--end-group -Wl,--start-group,-lxilisf,-lxil,-lgcc,-lc,--end-group -lxilflash
+LIBS := -lrsa -Wl,--start-group,-lxil,-lgcc,-lc,--end-group -lxilflash -Wl,--start-group,-lxilisf,-lxil,-lgcc,-lc,--end-group -Wl,--start-group,-lrsa,-lxil,-lgcc,-lc,--end-group -Wl,--start-group,-lxilskey,-lxil,-lgcc,-lc,--end-group
 

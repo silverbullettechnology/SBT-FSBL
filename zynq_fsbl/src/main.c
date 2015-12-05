@@ -153,6 +153,7 @@
 #define WDT_EXPIRE_TIME		100
 #define WDT_CRV_SHIFT		12
 #endif
+#define FILE_SYSTEM_INTERFACE_SD
 
 /**************************** Type Definitions *******************************/
 

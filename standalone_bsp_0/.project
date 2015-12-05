@@ -3,7 +3,7 @@
 	<name>standalone_bsp_0</name>
 	<comment>Created by SDK v2014.2</comment>
 	<projects>
-		<project>system_top_hw_platform_0</project>
+		<project>system_top_hw_platform_1</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

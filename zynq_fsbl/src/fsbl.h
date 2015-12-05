@@ -420,6 +420,10 @@ extern "C" {
 #define SILICON_VERSION_3 2
 #define SILICON_VERSION_3_1 3
 
+#ifdef XPAR_XSDPS_0_BASEADDR
+#define XPAR_PS7_SD_0_S_AXI_BASEADDR XPAR_XSDPS_0_BASEADDR
+#endif
+
 /*
  * DDR start address for storing the data temporarily(1M)
  * Need to finalize correct logic

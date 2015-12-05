@@ -16,11 +16,9 @@ src/sd.d: ../src/sd.c \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/xstatus.h \
  ../../standalone_bsp_0/ps7_cortexa9_0/include/xil_assert.h \
  ../src/fsbl_debug.h \
- E:\hdl\hdl\projects\tdsdr_2chan\tdsdr\tdsdr_2chan_tdsdr.sdk\system_top_hw_platform_0/ps7_init.h \
- ../../standalone_bsp_0/ps7_cortexa9_0/include/xstatus.h \
- ../../standalone_bsp_0/ps7_cortexa9_0/include/ff.h \
- ../../standalone_bsp_0/ps7_cortexa9_0/include/integer.h \
- ../../standalone_bsp_0/ps7_cortexa9_0/include/ffconf.h ../src/sd.h
+ E:\Silver-Bullet\sdrdc\SBT-FSBL\sdrdc_2chan_viv20142_12_03_2015_1247\sdrdc_2chan\sdrdc\sdrdc_2chan_sdrdc.sdk\system_top_hw_platform_1/ps7_init.h \
+ ../../standalone_bsp_0/ps7_cortexa9_0/include/xstatus.h ../src/ff.h \
+ ../src/integer.h ../src/ffconf.h ../src/sd.h
 
 ../../standalone_bsp_0/ps7_cortexa9_0/include/xparameters.h:
 
@@ -60,14 +58,14 @@ src/sd.d: ../src/sd.c \
 
 ../src/fsbl_debug.h:
 
-E:\hdl\hdl\projects\tdsdr_2chan\tdsdr\tdsdr_2chan_tdsdr.sdk\system_top_hw_platform_0/ps7_init.h:
+E:\Silver-Bullet\sdrdc\SBT-FSBL\sdrdc_2chan_viv20142_12_03_2015_1247\sdrdc_2chan\sdrdc\sdrdc_2chan_sdrdc.sdk\system_top_hw_platform_1/ps7_init.h:
 
 ../../standalone_bsp_0/ps7_cortexa9_0/include/xstatus.h:
 
-../../standalone_bsp_0/ps7_cortexa9_0/include/ff.h:
+../src/ff.h:
 
-../../standalone_bsp_0/ps7_cortexa9_0/include/integer.h:
+../src/integer.h:
 
-../../standalone_bsp_0/ps7_cortexa9_0/include/ffconf.h:
+../src/ffconf.h:
 
 ../src/sd.h:
